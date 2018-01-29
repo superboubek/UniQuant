@@ -8,9 +8,9 @@ This is the C++ reference implementation of the paper:
     ACM SIGGRAPH Asia 2017 Technical Brief
 
 
-The demonstrator use the Spherical Fibonacci point set as quantization, but can be use with any existing quantization. 
-If you want to try other quantizations, it's advisable to use the source code provided as supplemental material material of [this independant unit vector quantization survey](http://jcgt.org/published/0003/02/01/).
-If you need an higher precision or speed is the main concern, it's advisable to use octahedral quantization (with the implementation in linked survey additional materials).
+The demonstrator uses the Spherical Fibonacci point set as quantization, but can be used with any existing quantization. 
+If you want to try other quantizations, it's advisable to use the source code provided as the supplemental material of [this independent unit vector quantization survey](http://jcgt.org/published/0003/02/01/).
+If you need a higher precision or speed is the main concern, it's advisable to use octahedral quantization (with the implementation of linked survey additional materials).
 This is not the exact same version of the source code that is used to measure performance for the corresponding paper. Performance might have been affected during refactoring.
 
 Copyright(C) 2017 - 2018
@@ -20,10 +20,10 @@ All rights reserved.
 
 ## Building and Running
 This program uses CMake. it has been tested on Linux (Ubuntu 16.04, gcc 7.2) and on Windows (Visual Studio 2017, )
-External libraries are included in the repository, any compiler that support C++14 should be able to compile this project without troubles.
+External libraries are included in the repository, any compiler that supports C++14 should be able to compile this project without troubles.
 
-#Linux
-The source code was tested under Ubuntu 16.04 using using gcc 7.2.
+### Linux
+The source code was tested under Ubuntu 16.04 using gcc 7.2.
 To build the example on Linux, go to the directory containing this README.md file, then:
 
 ```
@@ -37,8 +37,7 @@ Then, you can simply run the example
 ```
 ./example
 ```
-#Windows
-The 
+### Windows
 Using Visual Studio 2017, open the CMakeLists.txt, and use the Visual Studio 15 2017 generator.
 
 ## Project page
