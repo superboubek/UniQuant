@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.9)
 project(example)
 
+add_definitions(-Weffc++)
+
 set(cmake_build_type release)
 
 find_package(OpenMP)
