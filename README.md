@@ -6,8 +6,6 @@ A header-only library which allows (un)quantifying efficiently unorganized index
 This is the C++ reference implementation of the paper:
 >**Fast Lossy Compression of 3D Unit Vector Sets.** *Sylvain Rousseau and Tamy Boubekeur.* SIGGRAPH Asia 2017 Technical Briefs (SA '17). ACM, New York, NY, USA, Article 23, 4 pages. DOI: [https://doi.org/10.1145/3145749.3149436](https://doi.org/10.1145/3145749.3149436)
 
-
-
 The demonstrator uses the Spherical Fibonacci point set as quantization method, but can be used with any existing quantization. 
 If you want to try other quantizations, it's advisable to use the source code provided as the supplemental material of [this independent unit vector quantization survey](http://jcgt.org/published/0003/02/01/).
 If you need a higher precision or speed is the main concern, it's advisable to use octahedral quantization (with the implementation of linked survey additional materials).
@@ -17,6 +15,10 @@ Copyright(C) 2017 - 2018
 Sylvain Rousseau and Tamy Boubekeur
                                                                            
 All rights reserved. 
+
+## Release Notes
+### Version 1.0
+Initial code publication. 
 
 ## Building and Running
 This program uses CMake. it has been tested on Linux (Ubuntu 16.04, gcc 7.2) and on Windows (Visual Studio 2017)
@@ -32,13 +34,12 @@ cd build
 cmake ..
 make
 ```
-Then, you can simply run the example
-
+Then, you can simply run the example:
 ```
 ./example
 ```
 ### Windows
-On Visual Studio 2017, open the CMakeLists.txt, and use the Visual Studio 15 2017 generator.
+On Visual Studio 2017, open the UniQuant folder, right-click on the CMakeLists.txt file and select build>example. You can then run the example.
 
 ## Project page
 The paper and additional resources can be found on the [project page](https://perso.telecom-paristech.fr/boubek/papers/UVC/)
