@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.8.9)
 project(example)
 
-add_definitions(-Weffc++)
+# Set default compile flags for GCC
+if(CMAKE_COMPILER_IS_GNUCXX)
+	message(STATUS "GCC detected, adding compile flags")
+	add_definitions(-Weffc++)
+endif(CMAKE_COMPILER_IS_GNUCXX)
 
 set(cmake_build_type release)
 
