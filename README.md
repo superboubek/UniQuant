@@ -4,7 +4,7 @@ A header-only library which allows (un)quantifying efficiently unorganized index
 
 
 This is the C++ reference implementation of the paper:
->**Fast Lossy Compression of 3D Unit Vector Sets.** *Sylvain Rousseau and Tamy Boubekeur.* SIGGRAPH Asia 2017 Technical Briefs (SA '17). ACM, New York, NY, USA, Article 23, 4 pages. DOI: [https://doi.org/10.1145/3145749.3149436](https://doi.org/10.1145/3145749.3149436)
+>**[Fast Lossy Compression of 3D Unit Vector Sets](https://perso.telecom-paristech.fr/boubek/papers/UVC/).** *Sylvain Rousseau and Tamy Boubekeur.* SIGGRAPH Asia 2017 Technical Briefs (SA '17). ACM, New York, NY, USA, Article 23, 4 pages. DOI: [https://doi.org/10.1145/3145749.3149436](https://doi.org/10.1145/3145749.3149436)
 
 The demonstrator uses the Spherical Fibonacci point set as quantization method, but can be used with any existing quantization. 
 If you want to try other quantizations, it's advisable to use the source code provided as the supplemental material of [this independent unit vector quantization survey](http://jcgt.org/published/0003/02/01/).
