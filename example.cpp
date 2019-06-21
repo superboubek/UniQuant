@@ -16,15 +16,20 @@
 #include "uniquant.h"
 #include "sfibonacci.h"
 #include "timer.h"
+#include "quantize.h"
 
-using CompressedVector = uint16_t;
-using CompressedWindow = std::vector<CompressedVector>;
 
 // since the inverse mapping have some numerical precision issue (see the original paper: Spherical Fibonacci Mapping,Keinert & al 2015) , 
 // it's advisable to keep the number of fibonacci points under 2^22
-const uint32_t nbFiboPoints = std::numeric_limits<CompressedVector>::max(); // should be available on the master and the workers
-const size_t nbVectors = 1'000'000;
+//const uint32_t nbFiboPoints = std::numeric_limits<QuantizationType>::max(); // should be available on the master and the workers
+const size_t nbVectors = 10'000'000;
 const unsigned level = 13; // should be available on the master and the workers
+const quant::QuantizationMethod method = quant::QuantizationMethod::OCTAHEDRAL;
+//const quant::QuantizationMethod method = quant::QuantizationMethod::SPHERICALFIBONACCI;
+
+//const GroupingMethod groupingMethod = GroupingMethod::SPHERICAL_FIBONACCI_POINTS;
+const GroupingMethod groupingMethod = GroupingMethod::DISCRETE_SPHERICAL_COORDINATES;
+
 
 
 
@@ -85,20 +90,22 @@ std::vector<std::vector<glm::fvec3>> sendToWorker(const std::vector<CompressedWi
 	uncompressedData.resize(compressedData.size());
 	for(int w = 0; w < int(compressedData.size()); ++w)
 	{
-		///compute average from w
-		glm::fvec3 average = uvc::computeAverage(w, mask, level);
+		///compute average
+		glm::fvec3 average;
+		average = uvc::computeAverage(w, mask, level, groupingMethod);
 		glm::dvec3 daverage = glm::normalize(glm::dvec3(average));
 
 		///uncompress unit vectors
 		uncompressedData[w].resize(compressedData[w].size());
 		
 
-		const float ratio = uvc::computeRatio(average, uvc::NMostSignificantBitsMask(level));
+		const float ratio = uvc::computeRatio(average, uvc::NMostSignificantBitsMask(level), groupingMethod);
 
 		#pragma omp parallel for
 		for (int i = 0; i < int(compressedData[w].size()); ++i)
 		{
-			glm::fvec3 v = fib::SF(compressedData[w][i], nbFiboPoints);
+			glm::fvec3 v;
+			v = quant::unquantize(compressedData[w][i], method);
 			if (abs(glm::dot(glm::normalize(glm::dvec3(v)), daverage)) < 1.0) // numerical instabilities
 				v = uvc::uniformMapping(v, average, ratio);
 			uncompressedData[w][i] = v;
@@ -114,7 +121,12 @@ int main()
 {
 	
 	Timer timer;
-	srand(unsigned(time(NULL)));
+	srand(0);//unsigned(time(NULL)));
+	if (groupingMethod == GroupingMethod::SPHERICAL_FIBONACCI_POINTS)
+	{
+		std::cout << "Precomputing Spherical Fibonacci Map" << std::endl;
+		uvc::precomputeFibMap(pow(2, level), 1000);
+	}
 
 	///////////////////////
 	/// initialize data////
@@ -132,7 +144,7 @@ int main()
 	std::vector<std::vector<size_t>> indices;
 	std::vector<std::vector<glm::fvec3>> groupedData;
 
-	uvc::group(data, indices, groupedData, level);
+	uvc::group(data, indices, groupedData, level, groupingMethod);
 	timer.printElapsed(" done");
 
 	/////////////////////
@@ -146,7 +158,7 @@ int main()
 	uint32_t mask = uvc::NMostSignificantBitsMask(level);
 
 
-    #pragma omp parallel for
+    	#pragma omp parallel for
 	for (int i = 0; i < int(groupedData.size()); ++i) // each window is processed in parallel
 	{
 		/// empty windows
@@ -154,8 +166,8 @@ int main()
 			continue;
 
 
-		glm::fvec3 average = uvc::computeAverage(groupedData[i][0], mask);
-		float ratio = uvc::computeRatio(average, mask);
+		glm::fvec3 average = uvc::computeAverage(i, mask, level, groupingMethod);
+		float ratio = uvc::computeRatio(average, mask, groupingMethod);
 		
 		CompressedWindow compressedWin;
 		compressedWin.resize(groupedData[i].size());
@@ -166,7 +178,7 @@ int main()
 		{
 			if (abs(glm::dot(glm::normalize(glm::dvec3(groupedData[i][j])), daverage)) < 1.0) /// numerical issue
 				groupedData[i][j] = glm::normalize(uvc::inverseUniformMapping(groupedData[i][j], average, ratio)); /// mapping
-			compressedWin[j] = CompressedVector(fib::inverseSF(groupedData[i][j], nbFiboPoints)); ///quantization
+			compressedWin[j] = quant::quantize(groupedData[i][j], method); ///quantization
 		}
 		compressedData[i] = compressedWin;
 	}
@@ -202,26 +214,28 @@ int main()
 		}
 	}
 
+	quant::printQuantizationInfos();
+
 	std::cout << "Using the mapping, the mean error is: " << utl::radians2degrees(cumulateError / nbVectors)
 			  << " and the max error is: " << utl::radians2degrees(maxError) << std::endl;
 
 	///--------------------------------------------------------------------------
-	/// For comparison we try spherical Fibonacci point set quantization without 
-	/// the mapping.
+	/// For comparison we try quantization without the mapping.
 	///--------------------------------------------------------------------------
 
 	cumulateError = 0;
 	maxError = 0;
 	for (auto & v : data)
 	{
-		const double error = utl::computeError(v, fib::SF(fib::inverseSF(v, nbFiboPoints), nbFiboPoints));
+		const double error = utl::computeError(v, quant::unquantize(quant::quantize(v, method), method));
 		cumulateError += error;
 		maxError = (error > maxError) ? error : maxError;
 	}
 	std::cout << "Without the mapping, the mean error is: " << utl::radians2degrees(cumulateError / nbVectors) 
 			  << " and the max error is: " << utl::radians2degrees(maxError) << std::endl;
 	
-	system("pause");
+	//system("pause");
+
 	
 	
 	return 0;

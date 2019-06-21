@@ -3,20 +3,22 @@
 A header-only library which allows (un)quantifying efficiently unorganized indexed unit vector sets in 3D.
 
 
-This is the C++ reference implementation of the paper:
+This is the updated C++ reference implementation of the paper:
 >**[Fast Lossy Compression of 3D Unit Vector Sets](https://perso.telecom-paristech.fr/boubek/papers/UVC/).** *Sylvain Rousseau and Tamy Boubekeur.* SIGGRAPH Asia 2017 Technical Briefs (SA '17). ACM, New York, NY, USA, Article 23, 4 pages. DOI: [https://doi.org/10.1145/3145749.3149436](https://doi.org/10.1145/3145749.3149436)
 
-The demonstrator uses the Spherical Fibonacci point set as quantization method, but can be used with any existing quantization. 
-If you want to try other quantizations, it's advisable to use the source code provided as the supplemental material of [this independent unit vector quantization survey](http://jcgt.org/published/0003/02/01/).
-If you need a higher precision or speed is the main concern, it's advisable to use octahedral quantization (with the implementation of linked survey additional materials).
-This is not the exact same version of the source code that is used to measure performance for the corresponding paper. Performance might have been affected during refactoring.
+The demonstrator uses the Spherical Fibonacci point set or the Octahedral quantization as quantization method, but can be used with any existing quantization. 
+This is not the exact same version of the source code that is used to measure performance for the corresponding paper. Performance might have been slightly affected during refactoring.
 
-Copyright(C) 2017 - 2018
+Copyright(C) 2017 - 2019
 Sylvain Rousseau and Tamy Boubekeur
                                                                            
 All rights reserved. 
 
 ## Release Notes
+### Version 2.0 (June 2019)
+- Added a new grouping strategy (based on spherical fibonacci, with more precise quantization but slower)
+- Added more quantization method (Octahedral quantization)
+
 ### Version 1.0
 Initial code publication. 
 
